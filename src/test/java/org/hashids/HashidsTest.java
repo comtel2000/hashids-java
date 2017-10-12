@@ -23,11 +23,11 @@ public class HashidsTest {
     a.encode(num_to_hash);
   }
 
-  @Test
+  @Test(expected = IllegalStateException.class)
   public void test_wrong_decoding() {
     final Hashids a = new Hashids("this is my pepper");
-    final long[] b = a.decode("NkK9");
-    Assert.assertEquals(b.length, 0);
+    a.setVerifyEnabled(true);
+    a.decode("NkK9");
   }
 
   @Test
@@ -185,17 +185,24 @@ public class HashidsTest {
     Assert.assertEquals("", a.encode(num_to_hash));
   }
 
-  @Test
-  public void test_issue45() throws Exception {
-    Hashids hashids = new Hashids("this is my salt");
-    long[] numbers = hashids.decode("()");
-    Assert.assertEquals(numbers.length, 0);
-    numbers = hashids.decode("[]");
-    Assert.assertEquals(numbers.length, 0);
-    numbers = hashids.decode("недействительный");
-    Assert.assertEquals(numbers.length, 0);
-    numbers = hashids.decode("無效");
-    Assert.assertEquals(numbers.length, 0);
+  @Test(expected = IllegalArgumentException.class)
+  public void test_issue45_1() throws Exception {
+    new Hashids("this is my salt").decode("()");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void test_issue45_2() throws Exception {
+    new Hashids("this is my salt").decode("[]");
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void test_issue45_3() throws Exception {
+    new Hashids("this is my salt").decode("недействительный");
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void test_issue45_4() throws Exception {
+    new Hashids("this is my salt").decode("無效");
   }
 
 }
